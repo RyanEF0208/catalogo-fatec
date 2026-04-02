@@ -8,6 +8,7 @@
         .container { max-width: 900px; margin: auto; background: white; padding: 20px; border-radius: 8px; }
         .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
         .search-box { display: flex; gap: 10px; margin-bottom: 20px; }
+        .text-danger { color: #FF0000; }
         input { padding: 8px; border: 1px solid #ccc; border-radius: 4px; flex: 1; }
         table { width: 100%; border-collapse: collapse; }
         th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
@@ -37,16 +38,23 @@
             <th>Nome</th>
             <th>Valor</th>
             <th>Ações</th>
+            <th>Data de cadastro</th>
         </tr>
         </thead>
         <tbody>
         <tr th:each="p : ${produtos}">
             <td th:text="${p.nome}"></td>
-            <td th:text="${'R$ ' + p.valor}"></td>
+            <td th:text="${'R$ ' + p.valor}" th:classappend="${p.valor} > 1000 ? 'text-danger' : ''"></td>
             <td>
                 <a th:href="@{/produtos/editar/{id}(id=${p.idProduto})}" class="btn btn-edit">Editar</a>
-                <a th:href="@{/produtos/excluir/{id}(id=${p.idProduto})}" class="btn btn-del" onclick="return confirm('Excluir?')">Remover</a>
+<!--                <a th:href="@{/produtos/excluir/{id}(id=${p.idProduto})}" class="btn btn-del" onclick="return confirm('Excluir?')">Remover</a>-->
+                <form th:action="@{/produtos/excluir/{id}(id=${p.idProduto})}" th:method="delete" style="display:inline;">
+                    <button type="submit" class="btn btn-del" onclick="return confirm('Deseja realmente excluir?')">
+                        Remover
+                    </button>
+                </form>
             </td>
+            <td th:text="${#temporals.format(p.dataCadastro, 'dd/MM/yyyy HH:mm')}"></td>
         </tr>
         </tbody>
     </table>

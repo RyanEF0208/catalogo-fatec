@@ -20,10 +20,9 @@ public class ProdutoService {
     }
 
     public void salvar(ProdutoModel produto) {
-        // Busca produtos com nome similar para validar duplicidade
+
         List<ProdutoModel> existentes = repository.findByNomeContainingIgnoreCase(produto.getNome());
 
-        // Se encontrar o mesmo nome em um ID diferente, bloqueia
         boolean nomeJaExiste = existentes.stream()
                 .anyMatch(p -> p.getNome().equalsIgnoreCase(produto.getNome())
                         && !p.getIdProduto().equals(produto.getIdProduto()));
@@ -34,11 +33,15 @@ public class ProdutoService {
         repository.save(produto);
     }
 
-    public ProdutoModel buscarPorId(Long id) {
-        return repository.findById(id).orElseThrow(() -> new RuntimeException("Não encontrado"));
+    public ProdutoModel editar(Long id) {
+        return buscarPorId(id);
     }
 
     public void excluir(Long id) {
         repository.deleteById(id);
+    }
+
+    public ProdutoModel buscarPorId(Long id) {
+        return repository.findById(id).orElseThrow(() -> new RuntimeException("Não encontrado"));
     }
 }

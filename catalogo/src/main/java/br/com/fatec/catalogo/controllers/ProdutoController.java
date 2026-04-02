@@ -28,7 +28,6 @@ public class ProdutoController {
             return (produto.getIdProduto() == null || produto.getIdProduto() == 0) ? "cadastro-produto" : "editar-produto";
         }
 
-        // Se o ID for 0, forçamos null para o banco gerar o próximo ID (Auto-incremento)
         if (produto.getIdProduto() != null && produto.getIdProduto() == 0) {
             produto.setIdProduto(null);
         }
@@ -46,5 +45,17 @@ public class ProdutoController {
     public String listar(@RequestParam(required = false) String nome, Model model) {
         model.addAttribute("produtos", service.listarTodos(nome));
         return "lista-produtos";
+    }
+
+    @GetMapping("/editar/{idProduto}")
+    public String editar(@PathVariable Long idProduto, Model model) {
+        model.addAttribute("produto", service.editar(idProduto));
+        return "editar-produto";
+    }
+
+    @DeleteMapping("/excluir/{idProduto}")
+    public String excluir(@PathVariable Long idProduto, Model model) {
+        service.excluir(idProduto);
+        return "redirect:/produtos";
     }
 }
