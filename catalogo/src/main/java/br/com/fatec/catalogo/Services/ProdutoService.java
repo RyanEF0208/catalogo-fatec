@@ -30,21 +30,18 @@ public class ProdutoService {
     }
 
     @Transactional
-    public void salvar(ProdutoModel produto){
-
-
+    public void salvar(ProdutoModel produto) {
         produto.setNome(produto.getNome().trim().toLowerCase());
 
         ProdutoModel existente = repository.findByNomeIgnoreCase(produto.getNome());
 
-        if (existente != null &&
-                !existente.getIdProduto().equals(produto.getIdProduto())) {
-
+        if (existente != null && !existente.getIdProduto().equals(produto.getIdProduto())) {
             throw new IllegalArgumentException("Já existe um produto com esse nome!");
         }
 
         repository.save(produto);
     }
+
     @Transactional
     public void excluirID(Long id){
 

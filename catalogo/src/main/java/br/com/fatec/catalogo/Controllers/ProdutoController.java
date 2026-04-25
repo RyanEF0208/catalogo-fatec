@@ -48,7 +48,6 @@ public class ProdutoController {
     public String salvarProduto(@Valid @ModelAttribute("produto") ProdutoModel produto,
                                 BindingResult result,
                                 Model model) {
-
         if (result.hasErrors()) {
             model.addAttribute("categorias", categoriaService.listarTodas());
             return "Cadastro-produtos";
@@ -60,12 +59,7 @@ public class ProdutoController {
             result.rejectValue("nome", "erro.nome", e.getMessage());
             model.addAttribute("categorias", categoriaService.listarTodas());
             return "Cadastro-produtos";
-        } catch (DataIntegrityViolationException e) {
-            result.rejectValue("nome", "erro.nome", "Nome já existe!");
-            model.addAttribute("categorias", categoriaService.listarTodas());
-            return "Cadastro-produtos";
         }
-
         return "redirect:/produtos";
     }
 
@@ -83,9 +77,9 @@ public class ProdutoController {
     public String atualizarProduto(@PathVariable("id") Long id,
                                    @Valid @ModelAttribute("produto") ProdutoModel produto,
                                    BindingResult result,
-                                   Model model){
-
+                                   Model model) {
         if (result.hasErrors()) {
+            model.addAttribute("categorias", categoriaService.listarTodas());
             return "Editar-produto";
         }
 
@@ -95,11 +89,10 @@ public class ProdutoController {
             service.salvar(produto);
         } catch (IllegalArgumentException e) {
             result.rejectValue("nome", "erro.nome", e.getMessage());
-            return "Editar-produto";
-        } catch (DataIntegrityViolationException e) {
-            result.rejectValue("nome", "erro.nome", "Nome já existe!");
+            model.addAttribute("categorias", categoriaService.listarTodas());
             return "Editar-produto";
         }
+
         return "redirect:/produtos";
     }
 
