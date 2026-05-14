@@ -1,6 +1,6 @@
 package br.com.fatec.catalogo.security;
 
-import br.com.fatec.catalogo.Models.UsuarioModel;
+import br.com.fatec.catalogo.models.UsuarioModel;
 import br.com.fatec.catalogo.Repository.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.*;

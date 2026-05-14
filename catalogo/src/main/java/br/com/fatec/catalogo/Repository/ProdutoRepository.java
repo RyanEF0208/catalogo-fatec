@@ -1,7 +1,7 @@
 package br.com.fatec.catalogo.Repository;
 import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
-import br.com.fatec.catalogo.Models.ProdutoModel;
+import br.com.fatec.catalogo.models.ProdutoModel;
 import org.springframework.stereotype.Repository;
 
 

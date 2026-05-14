@@ -1,106 +1,67 @@
-package br.com.fatec.catalogo.Controllers;
-import br.com.fatec.catalogo.Models.ProdutoModel;
-import org.springframework.dao.DataIntegrityViolationException;
+package br.com.fatec.catalogo.controllers;
+
+import br.com.fatec.catalogo.models.ProdutoModel;
+import br.com.fatec.catalogo.repositories.CategoriaRepository;
+import br.com.fatec.catalogo.repositories.ProdutoRepository;
+import br.com.fatec.catalogo.services.ProdutoService;
+import jakarta.validation.Valid;
 import org.springframework.ui.Model;
-import br.com.fatec.catalogo.Services.*;
-import br.com.fatec.catalogo.Repository.ProdutoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
 import org.springframework.validation.BindingResult;
-
-import java.util.List;
-import java.util.UUID;
-import br.com.fatec.catalogo.Models.ProdutoModel;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
+@RequestMapping("/produtos")
 public class ProdutoController {
+
     @Autowired
     private ProdutoService service;
 
     @Autowired
-    private CategoriaService categoriaService;
+    private CategoriaRepository categoriaRepository;
 
-    @GetMapping("/produtos")
-    public String listarProdutos(@RequestParam(required = false) String nome, Model model) {
-        List<ProdutoModel> produtos;
-        if (nome == null || nome.isEmpty()){
-            produtos = service.listarTodos();
-        }
-        else{
-            produtos = service.listarPorNome(nome);
-        }
-
-        model.addAttribute("produtos", produtos);
-        model.addAttribute("busca", nome);
-        return "Lista-produtos";
+    @GetMapping
+    public String listarProdutos(@RequestParam(name = "search", required = false) String search, Model model) {
+        model.addAttribute("produtos", service.listarTodos(search));
+        model.addAttribute("search", search);
+        return "lista-produtos";
     }
 
-    @GetMapping("/produtos/novo")
-    public String ExibirFormulario(Model model){
+
+    @GetMapping("/novo")
+    public String exibirFormulario(Model model){
         model.addAttribute("produto", new ProdutoModel());
-        model.addAttribute("categorias", categoriaService.listarTodas());
-        return "Cadastro-produtos";
+        model.addAttribute("categorias", categoriaRepository.findAll());
+        return "cadastro-produto";
     }
 
-    @PostMapping("/produtos/novo")
-    public String salvarProduto(@Valid @ModelAttribute("produto") ProdutoModel produto,
-                                BindingResult result,
-                                Model model) {
+    @PostMapping("/salvar")
+    public String salvarProduto(@Valid @ModelAttribute("produto") ProdutoModel produto, BindingResult result, Model model) {
         if (result.hasErrors()) {
-            model.addAttribute("categorias", categoriaService.listarTodas());
-            return "Cadastro-produtos";
+            return "cadastro-produto";
         }
 
         try {
             service.salvar(produto);
-        } catch (IllegalArgumentException e) {
-            result.rejectValue("nome", "erro.nome", e.getMessage());
-            model.addAttribute("categorias", categoriaService.listarTodas());
-            return "Cadastro-produtos";
         }
-        return "redirect:/produtos";
-    }
-
-    @GetMapping("/produtos/editar/{id}")
-    public String exibirEdicao(@PathVariable("id") Long id, Model model) {
-        ProdutoModel produto = service.buscarPorId(id);
-
-        model.addAttribute("produto", produto);
-        model.addAttribute("categorias", categoriaService.listarTodas());
-
-        return "Editar-produto";
-    }
-
-    @PostMapping("/produtos/editar/{id}")
-    public String atualizarProduto(@PathVariable("id") Long id,
-                                   @Valid @ModelAttribute("produto") ProdutoModel produto,
-                                   BindingResult result,
-                                   Model model) {
-        if (result.hasErrors()) {
-            model.addAttribute("categorias", categoriaService.listarTodas());
-            return "Editar-produto";
-        }
-
-        produto.setIdProduto(id);
-
-        try {
-            service.salvar(produto);
-        } catch (IllegalArgumentException e) {
-            result.rejectValue("nome", "erro.nome", e.getMessage());
-            model.addAttribute("categorias", categoriaService.listarTodas());
-            return "Editar-produto";
+        catch (IllegalArgumentException e) {
+            result.rejectValue("nome", "error.produto", e.getMessage());
+            return  "cadastro-produto";
         }
 
         return "redirect:/produtos";
     }
 
-    @GetMapping("/produtos/excluir/{id}")
-    public String excluirProduto(@PathVariable("id") Long id) {
-        service.excluirID(id);
-        return "redirect:/produtos";
+    @GetMapping("/editar/{id}")
+    public String exibirEdicao(@PathVariable long id, Model model){
+        model.addAttribute("produto", service.buscarPorId(id));
+        return "cadastro-produto";
     }
 
-
+    @GetMapping("/excluir/{id}")
+    public String excluirProduto(@PathVariable long id){
+        service.excluir(id);
+        return "redirect:/produtos";
+    }
 }

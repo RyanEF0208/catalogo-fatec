@@ -1,46 +1,61 @@
 package br.com.fatec.catalogo.models;
-
 import jakarta.persistence.*;
-import jakarta.validation.constraints.*;
-import org.springframework.cglib.core.Local;
+
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import jakarta.validation.constraints.Size;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
-import java.time.LocalDate;
+
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "TB_PRODUTO")
 public class ProdutoModel implements Serializable {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id_produto")
-    private Long idProduto;
+    private static final long serialVersionUID = 1L;
 
-    @NotBlank(message = "O nome é obrigatório.")
-    @Column(name = "nome")
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long idProduto;
+
+    @NotBlank(message = "O nome do produto é obrigatório.")
+    @Size(min = 2, max= 100, message = "O nome deve ter entre 2 e 100 caracteres.")
     private String nome;
 
     @NotNull(message = "O valor é obrigatório.")
-    @Positive(message = "O valor deve ser positivo.")
-    @Column(name = "valor")
+    @Positive(message = "O valor deve ser um número positivo.")
     private BigDecimal valor;
 
-    @Column(name = "data_cadastro", updatable = false)
+    @Column(name = "data_cadastro", nullable = false, updatable = false)
     private LocalDateTime dataCadastro;
 
-    public ProdutoModel() {}
-    public Long getIdProduto() { return idProduto; }
-    public void setIdProduto(Long idProduto) { this.idProduto = idProduto; }
-    public String getNome() { return nome; }
-    public void setNome(String nome) { this.nome = nome; }
-    public BigDecimal getValor() { return valor; }
-    public void setValor(BigDecimal valor) { this.valor = valor; }
-    public LocalDateTime getDataCadastro() { return dataCadastro; }
-    public void setDataCadastro(LocalDateTime dataHora) { this.dataCadastro = dataHora; }
-
     @PrePersist
-    protected void antesDeSalvar() {
+    protected void onCreate() {
         this.dataCadastro = LocalDateTime.now();
     }
+
+    @ManyToOne
+    @JoinColumn(name = "id_categoria", nullable = false)
+    private CategoriaModel categoria;
+
+    public ProdutoModel() {}
+
+    //Getters and Setters
+    public long getIdProduto() { return idProduto; }
+    public void setIdProduto(long idProduto) { this.idProduto = idProduto; }
+
+    public String getNome() { return nome; }
+    public void setNome(String nome) { this.nome = nome; }
+
+    public BigDecimal getValor() { return valor; }
+    public void setValor(BigDecimal valor) { this.valor = valor; }
+
+    public LocalDateTime getDataCadastro() { return dataCadastro; }
+    public void setDataCadastro(LocalDateTime dataCadastro) { this.dataCadastro = dataCadastro; }
+
+    public CategoriaModel getCategoria() { return categoria; }
+    public void setCategoria(CategoriaModel categoria) { this.categoria = categoria; }
 }
+

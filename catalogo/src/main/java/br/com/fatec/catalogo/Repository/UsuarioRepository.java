@@ -1,6 +1,6 @@
 package br.com.fatec.catalogo.Repository;
 
-import br.com.fatec.catalogo.Models.UsuarioModel;
+import br.com.fatec.catalogo.models.UsuarioModel;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

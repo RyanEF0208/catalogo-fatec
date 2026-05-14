@@ -1,11 +1,11 @@
-package br.com.fatec.catalogo.Services;
+package br.com.fatec.catalogo.services;
 
-
-import br.com.fatec.catalogo.Models.UsuarioModel;
-import br.com.fatec.catalogo.Repository.UsuarioRepository;
+import br.com.fatec.catalogo.models.UsuarioModel;
+import br.com.fatec.catalogo.repositories.UsuarioRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 @Service
 public class UsuarioService {
@@ -13,21 +13,23 @@ public class UsuarioService {
     @Autowired
     private UsuarioRepository repository;
 
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public List<UsuarioModel> listarTodos() {
+        return repository.findAll();
+    }
 
-    public void salvar(UsuarioModel usuario){
-
-        usuario.setUsername(usuario.getUsername().trim().toLowerCase());
-
-        if (repository.existsByUsernameIgnoreCase(usuario.getUsername())) {
-            throw new IllegalArgumentException("Usuário já existe!");
+    public void salvar(UsuarioModel usuario) {
+        if (usuario.getTipo() != null && !usuario.getTipo().startsWith("ROLE_")) {
+            usuario.setTipo("ROLE_" + usuario.getTipo().toUpperCase());
         }
-        usuario.setPassword(passwordEncoder.encode(usuario.getPassword()));
-        if (!usuario.getRole().startsWith("ROLE_")) {
-            usuario.setRole("ROLE_" + usuario.getRole());
-        }
-
         repository.save(usuario);
+    }
+
+    public UsuarioModel buscarPorId(Long id) {
+        return repository.findById(id)
+                .orElseThrow(() -> new IllegalArgumentException("Usuário não encontrado: " + id));
+    }
+
+    public void excluir(Long id) {
+        repository.deleteById(id);
     }
 }

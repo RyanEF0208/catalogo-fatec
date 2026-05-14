@@ -1,6 +1,6 @@
 package br.com.fatec.catalogo.Services;
 
-import br.com.fatec.catalogo.Models.CategoriaModel;
+import br.com.fatec.catalogo.models.CategoriaModel;
 import br.com.fatec.catalogo.Repository.CategoriaRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

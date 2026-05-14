@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="pt-br" xmlns:th="http://www.thymeleaf.org">
+<html xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>Gerenciar Categorias</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+</head>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+    }
+
+    nav {
+        background-color: #3498db;
+        padding: 14px 30px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    nav a {
+        color: #fff;
+        text-decoration: none;
+        font-size: 1rem;
+        font-weight: 700;
+        letter-spacing: 1px;
+        text-transform: uppercase;
+    }
+
+    nav a:hover {
+        opacity: 0.85;
+    }
+
+    nav .btn-entrar {
+        background-color: #fff;
+        color: #3498db;
+        margin-right: 6px;
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+        margin-left: 70%;
+    }
+
+    body {
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        background-color: #f0f2f5;
+        color: #333;
+    }
+
+    h1 {
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        font-size: 1.8rem;
+        color: #2c3e50;
+        letter-spacing: 0.5px;
+    }
+
+    table {
+        width: 100%;
+        max-width: 900px;
+        margin: 0 auto;
+        border-collapse: collapse;
+        background-color: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
+    }
+
+    thead {
+        background-color: #3498db;
+        color: #fff;
+    }
+
+    thead th {
+        padding: 14px 20px;
+        text-align: left;
+        font-weight: 600;
+        font-size: 0.95rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    tbody tr {
+        border-bottom: 1px solid #ecf0f1;
+        transition: background-color 0.2s;
+    }
+
+    tbody tr:last-child {
+        border-bottom: none;
+    }
+
+    tbody tr:hover {
+        background-color: #eaf4fd;
+    }
+
+    tbody td {
+        padding: 13px 30px;
+        font-size: 0.95rem;
+    }
+
+    tbody td:nth-child(2) {
+        color: #27ae60;
+        font-weight: 600;
+    }
+
+    .text-danger td:nth-child(2){
+        color: #e680e6;
+    }
+
+    .add {
+        text-align: center;
+        margin-bottom: 30px;
+        margin-top: 30px;
+        font-size: 1rem;
+        color: white;
+        background-color: #219a52;
+        text-decoration: none;
+        padding: 0.5rem;
+        border-radius: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Botões de ação */
+    .btn-editar,
+    .btn-remover {
+        display: inline-block;
+        padding: 6px 14px;
+        border-radius: 5px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        text-decoration: none;
+        border: none;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+
+    .btn-editar {
+        background-color: #3498db;
+        color: #fff;
+        margin-right: 6px;
+    }
+
+    .btn-editar:hover {
+        background-color: #2178b0;
+    }
+
+    .btn-remover {
+        background-color: #e74c3c;
+        color: #fff;
+    }
+
+    .btn-remover:hover {
+        background-color: #c0392b;
+    }
+
+    .acoes-form {
+        display: inline;
+    }
+</style>
+<body>
+<nav>
+    <div style="display: flex; justify-content: space-between; align-items: center;">
+        <a href="/produtos">FATEC - CATALOGO - NOVO</a>
+        <div>
+            <a th:href="@{/login}" class="btn-entrar" sec:authorize="isAnonymous()">Entrar</a>
+
+            <form th:action="@{/logout}" method="post" style="display: inline;" sec:authorize="isAuthenticated()">
+                <button type="submit" class="btn-remover" style="cursor: pointer; border: none; padding: 8px 15px;">
+                    Sair
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 10px; margin-top: 30px;">
+        <h1>Lista de Categorias</h1>
+
+        <div style="display: flex; gap: 10px;">
+            <a class="add" href="/categorias/novo">Adicionar Categoria</a>
+        </div>
+    </div>
+
+    <table>
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nome</th>
+            <th>Ações</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="cat : ${categorias}">
+            <td th:text="${cat.idCategoria}"></td>
+            <td th:text="${cat.nome}"></td>
+            <td>
+                <a th:href="@{/categorias/editar/{id}(id=${cat.idCategoria})}" class="btn-editar">Editar</a>
+                <a th:href="@{/categorias/excluir/{id}(id=${cat.idCategoria})}"
+                   class="btn-remover" onclick="return confirm('Excluir esta categoria?')">Excluir</a>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+    <div  style="display:block; text-align:center; margin-top:10px; color:#7f8c8d; text-decoration:none;">
+        <a href="/produtos">Voltar ao Catálogo</a>
+    </div>
+</nav>
+</body>
+</html>
