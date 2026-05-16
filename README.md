@@ -1,5 +1,0 @@
-spring.application.name=catalogo
-spring.datasource.url = jdbc:postgresql://localhost:5432/bancoRyan
-spring.datasource.username=postgres
-spring.datasource.password=123456
-spring.jpa.hibernate.ddl-auto=update
