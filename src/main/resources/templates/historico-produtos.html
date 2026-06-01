@@ -21,47 +21,37 @@
         </div>
 
         <div class="card-body">
-
-            <table class="table table-hover">
-
+            <table class="table table-hover align-middle">
                 <thead class="table-dark">
                 <tr>
-                    <th>ID</th>
+                    <th>ID Produto</th>
+                    <th>Usuário</th>
+                    <th>Ação</th>
                     <th>Produto</th>
                     <th>Quantidade</th>
-                    <th>Última Atualização</th>
+                    <th>Estoque Baixo</th>
+                    <th>Data</th>
                 </tr>
                 </thead>
-
                 <tbody>
-
-                <tr th:each="p : ${produtos}"
-                    th:classappend="${p.quantidade < 5}
-                    ? 'table-danger' : ''">
-
-                    <td th:text="${p.idProduto}"></td>
-
-                    <td th:text="${p.nome}"></td>
-
-                    <td th:text="${p.quantidade}"></td>
-
-                    <td th:text="${#temporals.format(
-                    p.dataCadastro,
-                    'dd/MM/yyyy HH:mm')}"></td>
-
+                <tr th:classappend="${a.estoqueBaixo}? 'table-danger'" th:each="a : ${auditorias}">
+                    <td th:text="${a.idProduto}"></td>
+                    <td th:text="${a.usuario}"></td>
+                    <td>
+                        <span class="badge" th:classappend="${a.acao == 'CREATE'} ? 'bg-success' :
+                      (${a.acao == 'UPDATE'} ? 'bg-warning' : 'bg-danger')" th:text="${a.acao}"></span>
+                    </td>
+                    <td th:text="${a.produto}"></td>
+                    <td th:text="${a.quantidade}"></td>
+                    <td>
+                        <span class="badge bg-danger" th:if="${a.estoqueBaixo}">SIM</span>
+                        <span class="badge bg-success" th:unless="${a.estoqueBaixo}">NÃO</span>
+                    </td>
+                    <td th:text="${#temporals.format(a.data,'dd/MM/yyyy HH:mm')}"></td>
                 </tr>
-
                 </tbody>
-
             </table>
-
-            <a th:href="@{/produtos}"
-               class="btn btn-secondary">
-
-                Voltar
-
-            </a>
-
+            <a class="btn btn-secondary" th:href="@{/produtos}">Voltar</a>
         </div>
     </div>
 </div>

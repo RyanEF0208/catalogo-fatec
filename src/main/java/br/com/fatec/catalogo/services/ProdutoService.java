@@ -15,6 +15,9 @@ public class ProdutoService {
     @Autowired
     private ProdutoRepository repository;
 
+    @Autowired
+    private AuditoriaService auditoriaService;
+
     public List<ProdutoModel> listarTodos() {
 
         return repository.findAll();
@@ -22,6 +25,10 @@ public class ProdutoService {
     // Resolve o Desafio 1
     public List<ProdutoModel> listarPorNome(String nome) {
         return repository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    public boolean estoqueBaixo(ProdutoModel p){
+        return p.getQuantidade() < 5;
     }
 
     public ProdutoModel buscarPorId(long id) {
@@ -41,6 +48,8 @@ public class ProdutoService {
     @Transactional
     public void salvar(ProdutoModel produto) {
 
+        boolean novo = produto.getIdProduto() == 0;
+
         if (produto.getQuantidade() < 0) {
             throw new RuntimeException("A quantidade não pode ser negativa.");
         }
@@ -51,13 +60,21 @@ public class ProdutoService {
             throw new RuntimeException("Já existe um produto com este nome.");
         }
 
-        produto.setDataCadastro(LocalDateTime.now());
+        if (produto.getIdProduto() == 0) {
+            produto.setDataCadastro(LocalDateTime.now());
+        }
 
         repository.save(produto);
+
+        auditoriaService.registrar(novo ? "CREATE" : "UPDATE", produto);
     }
 
     @Transactional
     public void excluir(long id) {
+        ProdutoModel produto = buscarPorId(id);
+
         repository.deleteById(id);
+
+        auditoriaService.registrar("DELETE", produto);
     }
 }

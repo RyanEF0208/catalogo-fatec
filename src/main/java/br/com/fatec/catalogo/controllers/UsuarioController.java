@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/usuarios")
@@ -30,14 +31,21 @@ public class UsuarioController {
     }
 
     @PostMapping("/salvar")
-    public String salvar(@Valid UsuarioModel usuario, BindingResult result) {
+    public String salvar(
+            @Valid UsuarioModel usuario,
+            BindingResult result,
+            RedirectAttributes attributes) {
+
         if (result.hasErrors()) {
             return "cadastro-usuario";
         }
 
-        // Antes era: userManager.createUser(...)
-        // Agora usamos o nosso service que já faz o BCrypt:
         usuarioService.salvar(usuario);
+
+        attributes.addFlashAttribute(
+                "sucesso",
+                "Usuário criado com sucesso!"
+        );
 
         return "redirect:/produtos";
     }

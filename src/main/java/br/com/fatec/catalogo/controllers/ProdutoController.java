@@ -1,6 +1,7 @@
 package br.com.fatec.catalogo.controllers;
 
 import br.com.fatec.catalogo.models.ProdutoModel;
+import br.com.fatec.catalogo.services.AuditoriaService;
 import br.com.fatec.catalogo.services.CategoriaService;
 import br.com.fatec.catalogo.services.ProdutoService;
 import jakarta.validation.Valid;
@@ -18,6 +19,9 @@ public class ProdutoController {
 
     @Autowired
     private ProdutoService service;
+
+    @Autowired
+    private AuditoriaService auditoriaService;
 
     @GetMapping
     public String listar(@RequestParam(value = "nome", required = false) String nome,
@@ -41,10 +45,12 @@ public class ProdutoController {
     }
 
     @GetMapping("/historico")
-    public String historico(Model model) {
+    public String historico(Model model){
 
-        model.addAttribute("produtos",
-                service.listarHistorico());
+        model.addAttribute(
+                "auditorias",
+                auditoriaService.listar()
+        );
 
         return "historico-produtos";
     }
@@ -94,11 +100,51 @@ public class ProdutoController {
         return "redirect:/produtos";
     }
 
+    @PostMapping("/editar/{id}")
+    public String atualizar(
+            @PathVariable long id,
+            @Valid @ModelAttribute ProdutoModel produto,
+            BindingResult result,
+            Model model,
+            RedirectAttributes attributes) {
+
+        if (result.hasErrors()) {
+            model.addAttribute("categorias", categoriaService.listarTodas());
+            return "editar-produto";
+        }
+
+        ProdutoModel existente = service.buscarPorId(id);
+
+        existente.setNome(produto.getNome());
+        existente.setValor(produto.getValor());
+        existente.setQuantidade(produto.getQuantidade());
+
+        existente.setCategoria(
+                categoriaService.buscarPorId(
+                        Long.valueOf(
+                                produto.getCategoria().getIdCategoria()
+                        )
+                )
+        );
+
+        service.salvar(existente);
+
+        attributes.addFlashAttribute(
+                "sucesso",
+                "Produto atualizado com sucesso às "
+                        + LocalTime.now().withNano(0)
+        );
+
+        return "redirect:/produtos";
+    }
+
     @GetMapping("/editar/{id}")
     public String editar(@PathVariable long id, Model model) {
+
         model.addAttribute("produto", service.buscarPorId(id));
         model.addAttribute("categorias", categoriaService.listarTodas());
-        return "cadastro-produto"; // Reutilizamos o mesmo form para editar
+
+        return "editar-produto";
     }
 
     @GetMapping("/excluir/{id}")

@@ -1,10 +1,7 @@
 package br.com.fatec.catalogo.models;
 
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -26,9 +23,12 @@ public class ProdutoModel implements Serializable {
 
     @NotNull(message = "O valor é obrigatório.")
     @Positive(message = "O valor deve ser um número positivo.")
+    @Digits(integer = 8, fraction = 2, message = "Máximo permitido: 8 dígitos inteiros e 2 decimais.")
     private BigDecimal valor;
 
     @NotNull(message = "A quantidade é obrigatória.")
+    @Positive(message = "A quantidade não pode ser negativa.")
+    @Max(value = 999999, message = "A quantidade máxima permitida é 999999.")
     private Integer quantidade;
 
     @NotNull(message = "A categoria é obrigatória")

@@ -11,6 +11,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 @RequestMapping("/categorias")
@@ -27,9 +28,22 @@ public class CategoriaController {
     }
 
     @PostMapping("/salvar")
-    public String salvar(@Valid CategoriaModel categoria, BindingResult result) {
-        if (result.hasErrors()) return "cadastro-categoria";
+    public String salvar(
+            @Valid CategoriaModel categoria,
+            BindingResult result,
+            RedirectAttributes attributes) {
+
+        if (result.hasErrors()) {
+            return "cadastro-categoria";
+        }
+
         categoriaService.salvar(categoria);
+
+        attributes.addFlashAttribute(
+                "sucesso",
+                "Categoria criada com sucesso!"
+        );
+
         return "redirect:/produtos";
     }
 }
